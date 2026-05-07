@@ -355,6 +355,100 @@ if(!isset($sm['theme']['logo']['val'])){
         $sm['theme'] = json_decode(getData('theme_preset','theme_settings',$themeFilter),true); 
 }
 
+// Self-heal: if theme_settings is still empty (e.g. on fresh install or missing DB data),
+// populate defaults so the desktop UI renders correctly and write them back to the DB.
+if (!isset($sm['theme']['logo']['val'])) {
+    $_themeBase = $site_url . 'themes/' . ($sm['config']['theme'] ?? 'default');
+    $_imgBase   = $_themeBase . '/images/';
+    $_defaults  = [
+        'logo'                            => ['val' => $_themeBase . '/logo.png'],
+        'favicon'                         => ['val' => $_themeBase . '/favicon.ico'],
+        'theme'                           => ['val' => $sm['config']['theme'] ?? 'default'],
+        'menu_background'                 => ['val' => '#ffffff'],
+        'menu_font_color'                 => ['val' => '#555555'],
+        'menu_font_color_active'          => ['val' => '#e91e63'],
+        'body_background'                 => ['val' => '#f5f5f5'],
+        'preload_enable'                  => ['val' => '0'],
+        'preload_bg'                      => ['val' => '#ffffff'],
+        'preload_image'                   => ['val' => ''],
+        'left_menu_color'                 => ['val' => '#ffffff'],
+        'left_menu_border_color'          => ['val' => '#e0e0e0'],
+        'left_menu_font'                  => ['val' => 'Roboto'],
+        'left_menu_font_size'             => ['val' => '14px'],
+        'left_menu_font_user'             => ['val' => 'Roboto'],
+        'left_menu_font_user_size'        => ['val' => '13px'],
+        'left_menu_user_color'            => ['val' => '#333333'],
+        'left_menu_premium_color'         => ['val' => '#e91e63'],
+        'left_menu_credits_color'         => ['val' => '#f5a623'],
+        'left_menu_photo_border_radius'   => ['val' => '50%'],
+        'left_menu_icon_people_nearby'    => ['val' => $_imgBase . 'm-meet.png'],
+        'left_menu_icon_chat'             => ['val' => $_imgBase . 'm-chat.png'],
+        'left_menu_icon_discover'         => ['val' => $_imgBase . 'm-discover.png'],
+        'left_menu_icon_popular'          => ['val' => $_imgBase . 'm-popular.png'],
+        'left_menu_icon_interactions'     => ['val' => $_imgBase . 'm-matches.png'],
+        'left_menu_icon_credits'          => ['val' => $_imgBase . 'icon-coins.png'],
+        'left_menu_icon_premium'          => ['val' => $_imgBase . 'vip_y.png'],
+        'left_menu_icon_withdrawl'        => ['val' => $_imgBase . 'icon-coins-withdraw.png'],
+        'story_on'                        => ['val' => '#e91e63'],
+        'story_off'                       => ['val' => '#cccccc'],
+        'story_on_landing'                => ['val' => '#e91e63'],
+        'story_off_landing'               => ['val' => '#cccccc'],
+        'spotlight_border_story'          => ['val' => '#e91e63'],
+        'spotlight_border_story_add'      => ['val' => '#e91e63'],
+        'spotlight_border_story_add_font' => ['val' => '#ffffff'],
+        'spotlight_border_story_online'   => ['val' => '#4caf50'],
+        'spotlight_border_radius'         => ['val' => '50%'],
+        'design_style'                    => ['val' => 'default'],
+        'design_style_wide'               => ['val' => '0'],
+        'card_design'                     => ['val' => 'default'],
+        'primary_color_profile_left'      => ['val' => '#e91e63'],
+        'primary_color_profile_right'     => ['val' => '#e91e63'],
+        'btn_bg'                          => ['val' => '#e91e63'],
+        'btn_color'                       => ['val' => '#ffffff'],
+        'btn_active_bg'                   => ['val' => '#c2185b'],
+        'btn_active_color'                => ['val' => '#ffffff'],
+        'btn_hover_color'                 => ['val' => '#ffffff'],
+        'search_card_bg'                  => ['val' => '#ffffff'],
+        'search_card_color'               => ['val' => '#333333'],
+        'search_card_font'                => ['val' => 'Roboto'],
+        'search_card_font_size'           => ['val' => '14px'],
+        'search_card_gradient'            => ['val' => 'rgba(0,0,0,0.5)'],
+        'top_menu_font'                   => ['val' => 'Roboto'],
+        'top_menu_font_size'              => ['val' => '14px'],
+        'top_menu_font_margin_right'      => ['val' => '15px'],
+        'top_menu_wall_color'             => ['val' => '#555555'],
+        'top_menu_wall_color_selected'    => ['val' => '#e91e63'],
+        'top_menu_wall_font'              => ['val' => 'Roboto'],
+        'top_menu_wall_font_size'         => ['val' => '14px'],
+        'top_menu_wall_notification_bg'   => ['val' => '#e91e63'],
+        'top_menu_wall_notification_color'=> ['val' => '#ffffff'],
+        'page_ajax_loader_color'          => ['val' => '#e91e63'],
+        'default_no_result'               => ['val' => ''],
+        'meet_no_result'                  => ['val' => ''],
+        'discover_no_result'              => ['val' => ''],
+        'meet_no_result_border'           => ['val' => '#e91e63'],
+        'discover_no_result_border'       => ['val' => '#e91e63'],
+        'footer_color'                    => ['val' => '#555555'],
+        'footer_border'                   => ['val' => '#e0e0e0'],
+    ];
+    // Merge: defaults fill only missing keys; existing data (if any) takes priority
+    if (is_array($sm['theme'])) {
+        $sm['theme'] = array_merge($_defaults, $sm['theme']);
+    } else {
+        $sm['theme'] = $_defaults;
+    }
+    // Persist defaults to DB so this branch is only hit once
+    if (isset($mysqli)) {
+        $_json    = $mysqli->real_escape_string(json_encode($sm['theme']));
+        $_theme   = $mysqli->real_escape_string($sm['settings']['desktopTheme'] ?? 'default');
+        $_preset  = $mysqli->real_escape_string($sm['settings']['desktopThemePreset'] ?? 'default');
+        $mysqli->query(
+            "UPDATE theme_preset SET theme_settings='" . $_json . "'" .
+            " WHERE theme='" . $_theme . "' AND preset='" . $_preset . "'"
+        );
+    }
+}
+
 $sm['config']['logo'] = $sm['theme']['logo']['val'];
 $sm['config']['admin_url'] = $site_url . 'administrator';
 $sm['config']['theme_url'] = $site_url . 'themes/' . $sm['config']['theme'];

@@ -121,10 +121,29 @@ require_once(__DIR__ . '/../assets/includes/core.php'); ?>
             $ip = '192.196.0.1';
         }
     ?>
+    <?php
+        // Validate mobileTheme — fall back if the template directory doesn't exist.
+        // The DB may still have a stale value (e.g. "default") from a previous install.
+        $resolvedMobileTheme = $sm['settings']['mobileTheme'] ?? 'mobile';
+        $templateBase = __DIR__ . '/templates/';
+        if (!is_dir($templateBase . $resolvedMobileTheme . '/home')) {
+            // Find the first valid theme folder
+            foreach (['mobile', 'twigo'] as $_fallback) {
+                if (is_dir($templateBase . $_fallback . '/home')) {
+                    $resolvedMobileTheme = $_fallback;
+                    break;
+                }
+            }
+            // Self-heal the DB so subsequent requests don't repeat the check cost
+            if (isset($mysqli)) {
+                $mysqli->query("UPDATE settings SET setting_val='" . $mysqli->real_escape_string($resolvedMobileTheme) . "' WHERE setting='mobileTheme'");
+            }
+        }
+    ?>
     <script>
         var userIp = '<?= $ip; ?>';
         var upType = 0;
-        var mobileTheme = '<?= htmlspecialchars($sm['settings']['mobileTheme'] ?? 'twigo'); ?>';
+        var mobileTheme = '<?= htmlspecialchars($resolvedMobileTheme); ?>';
     </script>
 
     <script src="lib/adsense/ng-adsense.js"></script>    
