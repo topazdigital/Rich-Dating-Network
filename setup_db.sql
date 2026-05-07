@@ -1,0 +1,418 @@
+CREATE DATABASE IF NOT EXISTS dating_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE dating_app;
+
+CREATE TABLE IF NOT EXISTS `settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `setting` varchar(200) NOT NULL,
+  `setting_val` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `settings` (`setting`, `setting_val`) VALUES
+('siteName', 'Dating Site'),
+('desktopTheme', 'default'),
+('desktopThemePreset', 'default'),
+('mobileTheme', 'default'),
+('emailTheme', 'default'),
+('landingTheme', 'default'),
+('landingThemePreset', 'default'),
+('currentVersion', '4.4.4.2'),
+('license', ''),
+('licenseError', ''),
+('fakeUserLimit', '0'),
+('fakeUserUsage', '0'),
+('premium', 'No'),
+('domainsLimit', '1'),
+('domainsUsage', '1'),
+('updateAvailable', 'No'),
+('checkUpdate', '0'),
+('title', 'Dating Site'),
+('description', 'A dating site'),
+('keywords', 'dating, singles, love'),
+('forceSSL', 'No'),
+('registerType', 'email'),
+('chatEnabled', 'Yes'),
+('profileApproval', 'No'),
+('photoApproval', 'No')
+ON DUPLICATE KEY UPDATE setting_val = VALUES(setting_val);
+
+CREATE TABLE IF NOT EXISTS `plugins_settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `plugin` varchar(200) NOT NULL,
+  `setting` varchar(200) NOT NULL,
+  `setting_val` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `plugins_settings` (`plugin`, `setting`, `setting_val`) VALUES
+('settings', 'siteName', 'Dating Site'),
+('settings', 'siteEmail', 'admin@localhost'),
+('settings', 'currency', 'USD'),
+('settings', 'defaultLang', '1'),
+('settings', 'browserLanguage', 'No'),
+('settings', 'timezone', 'UTC'),
+('settings', 'forceSSL', 'No'),
+('settings', 'registerType', 'email'),
+('pusher', 'key', ''),
+('pusher', 'secret', ''),
+('pusher', 'id', ''),
+('pusher', 'cluster', 'mt1'),
+('autoRegister', 'enabled', 'No'),
+('autoRegister', 'guestDefaultName', 'Guest'),
+('autoRegister', 'guestDefaultPswd', 'guest123'),
+('autoRegister', 'guestCustomOneUrl', '')
+ON DUPLICATE KEY UPDATE setting_val = VALUES(setting_val);
+
+CREATE TABLE IF NOT EXISTS `plugins_settings_values` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `plugin` varchar(200) NOT NULL,
+  `setting` varchar(200) NOT NULL,
+  `setting_val` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `plugins` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `plugin` varchar(200) NOT NULL,
+  `name` varchar(200) NOT NULL,
+  `enabled` varchar(10) DEFAULT 'No',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `setting` varchar(200) NOT NULL,
+  `setting_val` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `config` (`setting`, `setting_val`) VALUES
+('title', 'Dating Site'),
+('description', 'A dating site'),
+('keywords', 'dating')
+ON DUPLICATE KEY UPDATE setting_val = VALUES(setting_val);
+
+CREATE TABLE IF NOT EXISTS `languages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `language` varchar(100) NOT NULL,
+  `code` varchar(10) DEFAULT 'en',
+  `default` int(1) DEFAULT 0,
+  `flag` varchar(200) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `languages` (`id`, `language`, `code`, `default`) VALUES
+(1, 'English', 'en', 1)
+ON DUPLICATE KEY UPDATE language = VALUES(language);
+
+CREATE TABLE IF NOT EXISTS `app_lang` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang_id` int(11) NOT NULL,
+  `text` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `email_lang` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang_id` int(11) NOT NULL,
+  `text` text,
+  `key` varchar(200) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `seo_lang` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang_id` int(11) NOT NULL,
+  `page` varchar(200) DEFAULT '',
+  `title` text,
+  `description` text,
+  `keywords` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `lang` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang_id` int(11) NOT NULL,
+  `key` varchar(200) DEFAULT '',
+  `text` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `landing_lang` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang_id` int(11) NOT NULL,
+  `theme` varchar(200) DEFAULT '',
+  `preset` varchar(200) DEFAULT '',
+  `key` varchar(200) DEFAULT '',
+  `text` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `theme_settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `theme` varchar(200) NOT NULL,
+  `setting` varchar(200) NOT NULL,
+  `setting_val` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `theme_preset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `theme` varchar(200) NOT NULL,
+  `preset` varchar(200) NOT NULL,
+  `theme_settings` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `theme_preset` (`theme`, `preset`, `theme_settings`) VALUES
+('default', 'default', '{}'),
+('default', 'default', '{}')
+ON DUPLICATE KEY UPDATE theme_settings = VALUES(theme_settings);
+
+CREATE TABLE IF NOT EXISTS `config_themes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `folder` varchar(200) NOT NULL,
+  `name` varchar(200) NOT NULL,
+  `type` varchar(100) DEFAULT 'desktop',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `config_themes` (`folder`, `name`, `type`) VALUES
+('default', 'Default', 'desktop'),
+('default', 'Default', 'mobile'),
+('default', 'Default', 'landing'),
+('default', 'Default', 'email')
+ON DUPLICATE KEY UPDATE name = VALUES(name);
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) DEFAULT '',
+  `email` varchar(200) DEFAULT '',
+  `pass` varchar(200) DEFAULT '',
+  `age` int(3) DEFAULT 18,
+  `gender` int(2) DEFAULT 1,
+  `city` varchar(200) DEFAULT '',
+  `country` varchar(200) DEFAULT '',
+  `lat` float DEFAULT 0,
+  `lng` float DEFAULT 0,
+  `looking` int(2) DEFAULT 2,
+  `lang` int(11) DEFAULT 1,
+  `join_date` varchar(100) DEFAULT '',
+  `join_date_time` int(11) DEFAULT 0,
+  `bio` text,
+  `s_gender` int(2) DEFAULT 2,
+  `s_age` varchar(20) DEFAULT '18-99',
+  `verified` int(1) DEFAULT 0,
+  `credits` int(11) DEFAULT 0,
+  `admin` int(2) DEFAULT 0,
+  `moderator` int(11) DEFAULT 0,
+  `ip` varchar(100) DEFAULT '',
+  `last_access` int(11) DEFAULT 0,
+  `online_day` int(11) DEFAULT 0,
+  `password` varchar(200) DEFAULT '',
+  `username` varchar(200) DEFAULT '',
+  `facebook_id` varchar(200) DEFAULT '',
+  `instagram_id` varchar(200) DEFAULT '',
+  `twitter_id` varchar(200) DEFAULT '',
+  `total` int(11) DEFAULT 0,
+  `banned` int(1) DEFAULT 0,
+  `membership` varchar(100) DEFAULT 'free',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `users_photos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `u_id` int(11) NOT NULL,
+  `photo` varchar(500) DEFAULT '',
+  `profile` int(1) DEFAULT 0,
+  `thumb` varchar(500) DEFAULT '',
+  `approved` int(1) DEFAULT 1,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `users_premium` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `premium` int(1) DEFAULT 0,
+  `expire` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `users_notifications` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `messages` int(11) DEFAULT 0,
+  `likes` int(11) DEFAULT 0,
+  `matches` int(11) DEFAULT 0,
+  `visitors` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `users_extended` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `data` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `users_videocall` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `u_id` int(11) NOT NULL,
+  `token` varchar(200) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `users_visits` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `u1` int(11) NOT NULL,
+  `u2` int(11) NOT NULL,
+  `timeago` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `visit_unique` (`u1`,`u2`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `users_likes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `u1` int(11) NOT NULL,
+  `u2` int(11) NOT NULL,
+  `timeago` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `messages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `u1` int(11) NOT NULL,
+  `u2` int(11) NOT NULL,
+  `message` text,
+  `time` int(11) DEFAULT 0,
+  `read` int(1) DEFAULT 0,
+  `from` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `activity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `a_type` varchar(100) DEFAULT '',
+  `message` text,
+  `title` text,
+  `time` int(11) DEFAULT 0,
+  `uid` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `genders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang_id` int(11) NOT NULL,
+  `gender` varchar(100) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `genders` (`lang_id`, `gender`) VALUES
+(1, 'Male'),
+(1, 'Female')
+ON DUPLICATE KEY UPDATE gender = VALUES(gender);
+
+CREATE TABLE IF NOT EXISTS `interests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `interest` varchar(200) DEFAULT '',
+  `lang_id` int(11) DEFAULT 1,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `prices` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) DEFAULT '',
+  `price` float DEFAULT 0,
+  `type` varchar(100) DEFAULT '',
+  `days` int(11) DEFAULT 0,
+  `credits` int(11) DEFAULT 0,
+  `featured` int(1) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `accounts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) DEFAULT 'Free',
+  `type` varchar(100) DEFAULT 'free',
+  `enabled` int(1) DEFAULT 1,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `accounts` (`name`, `type`, `enabled`) VALUES
+('Free', 'free', 1),
+('Premium', 'premium', 1)
+ON DUPLICATE KEY UPDATE name = VALUES(name);
+
+CREATE TABLE IF NOT EXISTS `accounts_basic` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `feature` varchar(200) DEFAULT '',
+  `val` varchar(200) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `accounts_premium` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `feature` varchar(200) DEFAULT '',
+  `val` varchar(200) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `cron` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cron` varchar(200) DEFAULT '',
+  `cron_last_run` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `cron` (`cron`, `cron_last_run`) VALUES
+('cron', 0)
+ON DUPLICATE KEY UPDATE cron = VALUES(cron);
+
+CREATE TABLE IF NOT EXISTS `client` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `client` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `client` (`client`) VALUES ('{}');
+
+CREATE TABLE IF NOT EXISTS `moderation_list` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `moderation` varchar(200) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `moderators_permission` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `setting` varchar(200) DEFAULT '',
+  `setting_val` varchar(200) DEFAULT '',
+  `moderator` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `reports` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `u1` int(11) DEFAULT 0,
+  `u2` int(11) DEFAULT 0,
+  `reason` text,
+  `time` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `blocks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `u1` int(11) DEFAULT 0,
+  `u2` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `transactions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) DEFAULT 0,
+  `amount` float DEFAULT 0,
+  `type` varchar(100) DEFAULT '',
+  `time` int(11) DEFAULT 0,
+  `status` varchar(100) DEFAULT '',
+  `gateway` varchar(100) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

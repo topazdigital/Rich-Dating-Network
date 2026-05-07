@@ -1,10 +1,11 @@
 <?php
 
-$db_host = 'localhost';
-$db_name = 'admin_richdatingnetwork';
-$db_username = 'admin_richdatingnetwork';
-$db_password = 'dj@Topaz2016';
-$site_url = 'http://richdatingnetwork.com/';
+$db_host = '127.0.0.1';
+$db_port = 3306;
+$db_name = 'dating_app';
+$db_username = 'root';
+$db_password = '';
+$site_url = '/';
 
 
 //SOCIAL AND APPS SETTINGS
@@ -13,4 +14,3 @@ $site_google = '';
 $site_twitter = '';
 $app_android = '';
 $app_ios = '';
-
