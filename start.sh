@@ -6,7 +6,7 @@ MYSQL_LOGS=/home/runner/mysql_logs
 MYSQL_CNF=/home/runner/mysql.cnf
 APP_DIR=/home/runner/workspace
 
-mkdir -p "$MYSQL_RUN" "$MYSQL_LOGS"
+mkdir -p "$MYSQL_RUN" "$MYSQL_LOGS" "$MYSQL_DATADIR"
 
 cat > "$MYSQL_CNF" << 'CONFEOF'
 [mysqld]
@@ -28,27 +28,26 @@ mysql_ready() {
     mysql --defaults-file="$MYSQL_CNF" -u root --connect-timeout=2 -e "SELECT 1" > /dev/null 2>&1
 }
 
+# Initialize data directory if empty
+if [ ! -f "$MYSQL_DATADIR/mysql/user.frm" ] && [ ! -d "$MYSQL_DATADIR/mysql" ]; then
+    echo "[start.sh] Initializing MariaDB data directory..."
+    mysql_install_db --user=runner --datadir="$MYSQL_DATADIR" --auth-root-authentication-method=normal > /dev/null 2>&1 || \
+    mysql_install_db --datadir="$MYSQL_DATADIR" > /dev/null 2>&1
+    echo "[start.sh] Data directory initialized."
+fi
+
 rm -f "$MYSQL_RUN/mysql.sock" "$MYSQL_RUN/mysql.pid"
 
 echo "[start.sh] Starting MariaDB..."
 mysqld --defaults-file="$MYSQL_CNF" 2>>"$MYSQL_LOGS/error.log" &
 
-for i in $(seq 1 20); do
+for i in $(seq 1 30); do
     if mysql_ready; then
         echo "[start.sh] MariaDB ready in ${i}s"
         break
     fi
     sleep 1
 done
-
-if ! mysql_ready; then
-    echo "[start.sh] Normal start failed, trying skip-grant-tables mode..."
-    kill $(cat "$MYSQL_RUN/mysql.pid" 2>/dev/null) 2>/dev/null
-    sleep 2
-    rm -f "$MYSQL_RUN/mysql.sock" "$MYSQL_RUN/mysql.pid"
-    mysqld --defaults-file="$MYSQL_CNF" --skip-grant-tables 2>>"$MYSQL_LOGS/error.log" &
-    sleep 6
-fi
 
 if mysql_ready; then
     echo "[start.sh] MariaDB is ready!"
