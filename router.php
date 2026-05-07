@@ -4,8 +4,50 @@ $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $docRoot = __DIR__;
 $file = $docRoot . $uri;
 
-// Serve static files directly
+// Serve static files directly with caching headers
 if ($uri !== '/' && file_exists($file) && !is_dir($file)) {
+    $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+    $cacheExts = ['css','js','png','jpg','jpeg','gif','svg','ico','woff','woff2','ttf','eot','mp3','mp4','webm','ogg'];
+    if (in_array($ext, $cacheExts)) {
+        $mimeMap = [
+            'css'  => 'text/css',
+            'js'   => 'application/javascript',
+            'png'  => 'image/png',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif'  => 'image/gif',
+            'svg'  => 'image/svg+xml',
+            'ico'  => 'image/x-icon',
+            'woff' => 'font/woff',
+            'woff2'=> 'font/woff2',
+            'ttf'  => 'font/ttf',
+            'eot'  => 'application/vnd.ms-fontobject',
+            'mp3'  => 'audio/mpeg',
+            'mp4'  => 'video/mp4',
+            'webm' => 'video/webm',
+            'ogg'  => 'audio/ogg',
+        ];
+        $maxAge = 86400 * 7; // 7 days
+        $lastMod = filemtime($file);
+        $etag = md5($lastMod . $file);
+
+        // Check conditional request
+        if (
+            (isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH'] === $etag) ||
+            (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $lastMod)
+        ) {
+            http_response_code(304);
+            exit;
+        }
+
+        header('Content-Type: ' . ($mimeMap[$ext] ?? 'application/octet-stream'));
+        header('Cache-Control: public, max-age=' . $maxAge);
+        header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $maxAge) . ' GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastMod) . ' GMT');
+        header('ETag: ' . $etag);
+        readfile($file);
+        exit;
+    }
     return false;
 }
 

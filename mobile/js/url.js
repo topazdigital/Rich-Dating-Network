@@ -1,1 +1,1 @@
-var site_url = 'http://www.localhost/belloo/';
+var site_url = (typeof site_url !== 'undefined' && site_url !== '') ? site_url : '/';

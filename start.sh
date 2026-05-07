@@ -65,4 +65,16 @@ fi
 
 echo "[start.sh] Starting PHP web server on 0.0.0.0:5000..."
 cd "$APP_DIR"
-exec php -S 0.0.0.0:5000 -t "$APP_DIR" "$APP_DIR/router.php" -d log_errors=1 -d error_log=/home/runner/php_errors.log -d error_reporting=32767
+exec php -S 0.0.0.0:5000 -t "$APP_DIR" "$APP_DIR/router.php" \
+    -d log_errors=1 \
+    -d error_log=/home/runner/php_errors.log \
+    -d error_reporting=32767 \
+    -d opcache.enable=1 \
+    -d opcache.enable_cli=1 \
+    -d opcache.memory_consumption=128 \
+    -d opcache.max_accelerated_files=4000 \
+    -d opcache.revalidate_freq=60 \
+    -d opcache.fast_shutdown=1 \
+    -d output_buffering=4096 \
+    -d zlib.output_compression=On \
+    -d zlib.output_compression_level=6
