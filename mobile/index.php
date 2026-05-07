@@ -1,13 +1,14 @@
 <?php 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-require_once('../assets/includes/core.php'); ?>
+require_once(__DIR__ . '/../assets/includes/core.php'); ?>
 <!DOCTYPE html>
 <html>
   <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, target-densityDpi=device-dpi">
-	<title></title>
+        <base href="/mobile/">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, target-densityDpi=device-dpi">
+        <title></title>
     <link href="css/magic.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link href="css/belloo20.css" rel="stylesheet">       
@@ -16,24 +17,24 @@ require_once('../assets/includes/core.php'); ?>
     <link href="css/i.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <script>
-	var site_url = '<?= $sm['config']['site_url']; ?>';
+        var site_url = '<?= $sm['config']['site_url']; ?>';
     var siteUrl = '<?= $sm['config']['site_url']; ?>';
-	</script>
+        </script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/collide/collide.js"></script>
     <script src="lib/ionic-ion-tinder-cards/ionic.tdcards.js"></script>
     <script src="lib/angular-elastic/elastic.js"></script>
     <script src="js/giphy.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
-	<script src="lib/gsap/src/uncompressed/TweenMax.js"></script>
-	<script src="lib/ngFx/dist/ngFx.js"></script>
+        <script src="lib/gsap/src/uncompressed/TweenMax.js"></script>
+        <script src="lib/ngFx/dist/ngFx.js"></script>
     <script src="lib/hammer/hammer.js"></script>
     <link rel="icon" type="image/png" href="<?= $sm['theme']['favicon']['val']; ?>" sizes="32x32">
     <script src="lib/angular-animate/angular-animate.js"/></script>
     <script src="https://angular-ui.github.io/ui-router/release/angular-ui-router.min.js"></script>    
     <link rel="stylesheet" href="lib/awlert/dist/css/awlert.css">
     <script src="lib/awlert/dist/js/awlert.min.js"></script>
-	<script src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
+        <script src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
     <script src="https://js.pusher.com/4.0/pusher.min.js"></script>
     <link href="css/autocomplete.css" rel="stylesheet" type="text/css" />       
     <link rel="stylesheet" href="<?php echo $sm['config']['theme_url']; ?>/css/vendor/slim-lightbox.min.css">
@@ -45,13 +46,13 @@ require_once('../assets/includes/core.php'); ?>
         var mobileSite = true;      
     </script>
 
-	<script>
+        <script>
     var oneSignalID=-1,notificationOpenedCallback=function(e){},reg=0,c_quantity=0,lid=43,loader=0,p_quantity=0,ticky=!1,app,interval,c_price,reg_photo="",reg_username="",reg_lat="",reg_lng="",reg_city="",reg_country="",reg_thumb="",p_price,url,mobile=!1,chatLimit=!1,config="",peer,in_videocall=!1,site_prices,account_basic,account_premium,lang,tlang,alang,online=[],unread=[],usPhotos="",cu,regName,localStream,tlang,current_user,user="",show_chat_premium=1,game_array,user_info,current_user_id=0,user_name,meet_limit=0,meet_pages=0,spotlight=[],da=site_url,chats=[],f=da,matche=[],visitors=[],mylikes=[],superlikes=[],myfans=[],cards=[],gresult=[],chatUser,s_age,bottom=!1,s_radius,s_gender,onlineMeet=0,chatInterval,y=f,user_country,u=y,a=u,user_city,site_lang,site_config,totalDiscoverStories=0,storiesGlobal=[],goBackGlobal='';
-    	<?php 
+        <?php 
         $user = array();
         if(isset($_GET['appId'])){
-    		echo 'oneSignalID = "'.$_GET['appId'].'";';
-    	} 
+                echo 'oneSignalID = "'.$_GET['appId'].'";';
+        } 
         if (isset($_SESSION['user']) && is_numeric($_SESSION['user']) && $_SESSION['user'] > 0) {   
             $user = $sm['user'];      
             echo 'oneSignalID = '.$_SESSION['user'].';';
@@ -123,6 +124,7 @@ require_once('../assets/includes/core.php'); ?>
     <script>
         var userIp = '<?= $ip; ?>';
         var upType = 0;
+        var mobileTheme = '<?= htmlspecialchars($sm['settings']['mobileTheme'] ?? 'twigo'); ?>';
     </script>
 
     <script src="lib/adsense/ng-adsense.js"></script>    
@@ -134,7 +136,7 @@ require_once('../assets/includes/core.php'); ?>
     <script src="js/resource.min.js"></script>
     <script src="lib/jquery/jquery.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ng-flow/2.5.1/ng-flow-standalone.min.js"></script>
-	<script src="https://checkout.stripe.com/checkout.js"></script>
+        <script src="https://checkout.stripe.com/checkout.js"></script>
     <script src="https://connect.facebook.net/en_US/sdk.js"></script>    
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet" type="text/css"/>

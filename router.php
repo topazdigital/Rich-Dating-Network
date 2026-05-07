@@ -71,6 +71,13 @@ if (preg_match('#^m_profile/([0-9]+)/([A-Za-z0-9-]+)/?$#', $path, $m)) {
     return;
 }
 
+// mobile app routes — serve mobile/index.php for all /mobile paths (AngularJS HTML5 mode)
+if ($path === 'mobile' || $path === 'mobile/' || strpos($path, 'mobile/') === 0) {
+    parse_str($query ?? '', $extra); $_GET = array_merge($_GET, $extra);
+    require $docRoot . '/mobile/index.php';
+    return;
+}
+
 // chat routes
 if (preg_match('#^chat/([0-9]+)/([A-Za-z0-9-]+)/?$#', $path, $m)) {
     $_GET['page'] = 'chat';
